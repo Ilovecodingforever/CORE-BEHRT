@@ -1,4 +1,4 @@
-name: ml_core_behrt
+name: /home/mingzhul/projects/Simultaneous-EHR/repos/CORE-BEHRT/.conda/ml_core_behrt
 channels:
   - defaults
 dependencies:
@@ -151,3 +151,4 @@ dependencies:
       - websocket-client==1.5.1
       - widgetsnbextension==4.0.6
       - y-py==0.5.9
+prefix: /home/mingzhul/projects/Simultaneous-EHR/repos/CORE-BEHRT/.conda/ml_core_behrt
