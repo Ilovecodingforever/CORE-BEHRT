@@ -7,7 +7,7 @@ import torch
 from ehr2vec.common.azure import AzurePathContext, save_to_blobstore
 from ehr2vec.common.config import load_config
 from ehr2vec.common.logger import TqdmToLogger
-from ehr2vec.common.setup import DirectoryPreparer, get_args
+from ehr2vec.common.setup import DirectoryPreparer, get_args, resolve_seed, seed_everything
 from ehr2vec.common.utils import check_patient_counts
 from ehr2vec.data.concept_loader import ConceptLoaderLarge
 from ehr2vec.downstream_tasks.outcomes import OutcomeMaker
@@ -32,11 +32,13 @@ def process_data(loader, cfg, features_cfg, logger):
 
 def main_data(config_path):
     cfg = load_config(config_path)
+    seed_everything(resolve_seed(cfg), deterministic=bool(getattr(cfg, 'trainer_args', {}).get('deterministic', True) if hasattr(cfg, 'trainer_args') else True))
     cfg.paths.outcome_dir = join(cfg.features_dir, 'outcomes', cfg.outcomes_name)
     
     cfg, _, mount_context = AzurePathContext(cfg, dataset_name=BLOBSTORE).azure_outcomes_setup()
 
     logger = DirectoryPreparer(config_path).prepare_directory_outcomes(cfg.paths.outcome_dir, cfg.outcomes_name)
+    logger.info(f'Seed set to {resolve_seed(cfg)}')
     logger.info('Mount Dataset')
     logger.info('Starting outcomes creation')
     features_cfg = load_config(join(cfg.features_dir, 'data_config.yaml'))

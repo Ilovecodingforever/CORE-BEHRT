@@ -2,13 +2,14 @@ env: local
 paths:
   run_name: test
 outcomes_name: "TEST_OUTCOME"
-features_dir: ../outputs/data_icd10
+features_dir: ../outputs/features_full
 loader:
-  data_dir: ../data/formatted/synthea500_icd10 
+  # data_dir: ../data/formatted/synthea500_icd10 
+  data_dir: ../data/formatted/mimic4_med_diag
   concepts: [
     diagnose
   ]
-  batch_size: 50
+  batch_size: 100000
   chunksize: 300
 outcomes:
   TEST_OUTCOME: 

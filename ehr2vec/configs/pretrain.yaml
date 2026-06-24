@@ -1,10 +1,10 @@
 env: local
 paths:
   # data_path: 'pretrain_datasets/diagnosis_medication/070623/outputs/data' # inside mounted datastore
-  data_path: "..\\outputs\\features_test"
+  data_path: "../outputs/features_full"
   output_path: outputs/pretraining
   type: med_diag
-  run_name: behrt_test
+  run_name: behrt_full
   tokenized_dir: tokenized
   #predefined_splits: outputs/pretraining/behrt_base
   
@@ -47,7 +47,8 @@ model:
   plusplus: true
   abspos_embeddings: false
   prolonged_length_of_stay: 1 # give in days
-  pool_type: mean
+  # pool_type: mean
+  pool_type: cls
 optimizer:
   lr: 5e-4
   eps: 1e-6

@@ -7,7 +7,7 @@ from ehr2vec.common.config import load_config
 from ehr2vec.common.initialize import Initializer
 from ehr2vec.common.loader import (load_checkpoint_and_epoch,
                            load_model_cfg_from_checkpoint)
-from ehr2vec.common.setup import DirectoryPreparer, copy_data_config, get_args
+from ehr2vec.common.setup import seed_everything, resolve_seed, DirectoryPreparer, copy_data_config, get_args
 from ehr2vec.data.prepare_data import DatasetPreparer
 from ehr2vec.model.config import adjust_cfg_for_behrt, adjust_cfg_for_discrete_abspos
 from ehr2vec.trainer.trainer import EHRTrainer
@@ -25,6 +25,8 @@ def main_train(config_path):
     cfg, run, mount_context = AzurePathContext(cfg, dataset_name=BLOBSTORE).adjust_paths_for_azure_pretrain()
 
     logger, run_folder = DirectoryPreparer.setup_run_folder(cfg)
+    seed_everything(resolve_seed(cfg), deterministic=bool(cfg.trainer_args.get('deterministic', True)))
+    logger.info(f'Seed set to {resolve_seed(cfg)}')
     copy_data_config(cfg, run_folder)
     
     loaded_from_checkpoint = load_model_cfg_from_checkpoint(cfg, 'pretrain_config.yaml') # if we are training from checkpoint, we need to load the old config

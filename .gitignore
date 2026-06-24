@@ -1,4 +1,5 @@
 .vscode
+.conda/
 __pycache__
 .DS_Store
 output
@@ -15,3 +16,6 @@ data/formatted/synthea10k/concept.diagnose.csv
 /results/GraphicalAbstract
 requirements.txt
 ehr2vec/notebooks/*.png
+
+
+.conda

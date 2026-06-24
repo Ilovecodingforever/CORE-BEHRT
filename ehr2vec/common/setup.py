@@ -1,7 +1,11 @@
 import argparse
 import logging
 import os
+import random
 import uuid
+
+import numpy as np
+import torch
 from os.path import join, split
 from shutil import copyfile
 from typing import Tuple
@@ -11,6 +15,28 @@ from ehr2vec.common.config import Config
 logger = logging.getLogger(__name__)  # Get the logger for this module
 
 CHECKPOINTS_DIR = "checkpoints"
+
+
+def resolve_seed(cfg: Config, default: int = 42) -> int:
+    trainer_args = cfg.get("trainer_args", {}) if isinstance(cfg, dict) else {}
+    return int(trainer_args.get("seed", cfg.get("seed", default)))
+
+
+def seed_everything(seed: int, deterministic: bool = True) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    if deterministic:
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        try:
+            torch.use_deterministic_algorithms(True, warn_only=True)
+        except TypeError:
+            torch.use_deterministic_algorithms(True)
+
 
 def get_args(default_config_name, default_run_name=None):
     parser = argparse.ArgumentParser()

@@ -6,8 +6,10 @@ import torch
 from ehr2vec.common.azure import save_to_blobstore
 from ehr2vec.common.initialize import Initializer, ModelManager
 from ehr2vec.common.loader import load_and_select_splits
-from ehr2vec.common.setup import (DirectoryPreparer, copy_data_config,
-                                  copy_pretrain_config, get_args)
+from ehr2vec.common.setup import (
+    DirectoryPreparer, copy_data_config, copy_pretrain_config, get_args,
+    resolve_seed, seed_everything,
+)
 from ehr2vec.common.utils import Data, compute_number_of_warmup_steps
 from ehr2vec.data.dataset import BinaryOutcomeDataset
 from ehr2vec.data.prepare_data import DatasetPreparer
@@ -144,6 +146,8 @@ if __name__ == '__main__':
     cfg, run, mount_context, pretrain_model_path = Initializer.initialize_configuration_finetune(config_path, dataset_name=BLOBSTORE)
 
     logger, finetune_folder = DirectoryPreparer.setup_run_folder(cfg)
+    seed_everything(resolve_seed(cfg), deterministic=bool(cfg.trainer_args.get('deterministic', True)))
+    logger.info(f'Seed set to {resolve_seed(cfg)}')
     
     copy_data_config(cfg, finetune_folder)
     copy_pretrain_config(cfg, finetune_folder)

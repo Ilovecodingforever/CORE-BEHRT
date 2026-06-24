@@ -190,9 +190,11 @@ class AzurePathContext:
         
         logger.info(f"Loading pretrain config from {pretrain_cfg_path}")
         pretrain_cfg = load_config(pretrain_cfg_path)
- 
-        pretrain_data_path = self._remove_mount_folder(pretrain_cfg.paths.data_path)
-        
+
+        pretrain_data_path = pretrain_cfg.paths.data_path
+        if self.azure_env:
+            pretrain_data_path = self._remove_mount_folder(pretrain_data_path)
+
         self.cfg.data.remove_background = pretrain_cfg.data
         if 'tokenized_dir' not in self.cfg.paths:
             logger.info("Tokenized dir not in config. Adding from pretrain config.")

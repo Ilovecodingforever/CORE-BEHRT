@@ -15,7 +15,7 @@ import torch
 from ehr2vec.common.azure import AzurePathContext, save_to_blobstore
 from ehr2vec.common.config import load_config
 from ehr2vec.common.logger import TqdmToLogger
-from ehr2vec.common.setup import DirectoryPreparer, get_args
+from ehr2vec.common.setup import seed_everything, resolve_seed, DirectoryPreparer, get_args
 from ehr2vec.common.utils import check_directory_for_features
 from ehr2vec.data.batch import Batches, BatchTokenize
 from ehr2vec.data.concept_loader import ConceptLoaderLarge
@@ -47,6 +47,8 @@ def main_data(config_path):
     cfg, _, mount_context = AzurePathContext(cfg, dataset_name=BLOBSTORE).azure_data_pretrain_setup()
 
     logger = DirectoryPreparer(config_path).prepare_directory(cfg)  
+    seed_everything(resolve_seed(cfg), deterministic=bool(cfg.get('trainer_args', {}).get('deterministic', True)))
+    logger.info(f'Seed set to {resolve_seed(cfg)}')
     logger.info('Mount Dataset')
     
     logger.info('Initialize Processors')
